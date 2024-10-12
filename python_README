@@ -1,0 +1,18 @@
+1) I created python virtual environment via:
+python3 -m venv ~/repos/Halloween2024_HogwartsExpress/halloween2024_venv
+
+2) activate it using:
+source halloween2024_venv/bin/activate
+
+3) confirm the virtual env via:
+which python
+
+4) deactivate virtual env, when you're in it, via:
+deactivate
+
+
+packages to install
+
+pip3 install python-vlc
+pip3 install sanic # used for async HTML calls
+pip3 install sanic aiohttp
