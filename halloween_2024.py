@@ -5,6 +5,9 @@ from train import Train
 
 app = Sanic("ButtonApp")
 
+# serve static files from the 'static' directory
+app.static('/static', './static')
+
 # HTML content with buttons that make asynchronous requests
 HTML_CONTENT = """
 <!DOCTYPE html>
@@ -13,6 +16,13 @@ HTML_CONTENT = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hogwarts Page</title>
+    <style>
+        /* add margin to all images */
+        img 
+        {
+            margin: 30px;
+        }
+    </style>
     <script>
         async function buttonAction(action) {
             const response = await fetch('/action/' + action);
@@ -25,21 +35,21 @@ HTML_CONTENT = """
     <h1>Hogwarts Express Action Page</h1>
     
     <h2>Basic Controls</h2>
-    <button onclick="buttonAction('smoke')">Release Smoke</button>
+    <img src="/static/smoke.png" onclick="buttonAction('smoke')" style="cursor:pointer; width=100px; height=100px;" alt="Image 8"/>
     <button onclick="buttonAction('lights')">Turn Lights On/Off</button>
     <button onclick="buttonAction('horn')">Play Train Horn</button>
     <button onclick="buttonAction('wheels')">Turn Wheels On/Off</button>
     
     <h2>Music Controls</h2>
-    <button onclick="buttonAction('play')">Play Song</button>
-    <button onclick="buttonAction('pause')">Pause Song</button>
-    <button onclick="buttonAction('stop')">Stop Song</button>
-    <button onclick="buttonAction('next')">Next Song</button>
-    <button onclick="buttonAction('previous')">Previous Song</button>
-    <button onclick="buttonAction('increase')">Increase Volume</button>
-    <button onclick="buttonAction('decrease')">Decrease Volume</button>
+    <img src="/static/previous.png" onclick="buttonAction('previous')" style="cursor:pointer; width=100px;" alt="Image 1"/>
+    <img src="/static/play.png" onclick="buttonAction('play')" style="cursor:pointer; width=100px;" alt="Image 2"/>
+    <img src="/static/next.png" onclick="buttonAction('next')" style="cursor:pointer; width=100px;" alt="Image 3"/>
+    <img src="/static/pause.png" onclick="buttonAction('pause')" style="cursor:pointer; width=100px;" alt="Image 4"/>
+    <img src="/static/stop.png" onclick="buttonAction('stop')" style="cursor:pointer; width=100px;" alt="Image 5"/>
+    <img src="/static/raise_volume.png" onclick="buttonAction('increase')" style="cursor:pointer; width=100px;" alt="Image 6"/>
+    <img src="/static/lower_volume.png" onclick="buttonAction('decrease')" style="cursor:pointer; width=100px;" alt="Image 7"/>
 
-    <p id="result">Result will appear here</p>
+    <p id="result"></p>
 </body>
 </html>
 """
@@ -131,17 +141,6 @@ global_dict    = {"smoke":{"state":False,"function":control_smoke},
                   "horn":{"state":False,"function":control_horn},
                   "wheels":{"state":False,"function":control_wheels}
                  }
-'''
-music_state    = "stop"
-music_dict     = {"play":{"state":"resume","function":pps_song},
-                  "pause":{"state":"pause","function":pps_song},
-                  "stop":{"state":"stop","function":pps_song},
-                  "next":{"state":"resume","function":change_song},
-                  "previous":{"state":"resume","function":change_song},
-                  "increase":{"state":"resume","function":set_volume},
-                  "decrease":{"state":"resume","function":set_volume}
-                 }
-'''
 
 # Asynchronous actions triggered by buttons
 '''
@@ -150,6 +149,8 @@ async def perform_action(request, action):
     result = await toggle_states(action)
     return json(result)
 '''
+
+music_control_list = ["play", "previous", "next", "pause", "stop", "increase", "decrease"]
 
 @app.route('/action/<action>')
 async def perform_action(request, action):
