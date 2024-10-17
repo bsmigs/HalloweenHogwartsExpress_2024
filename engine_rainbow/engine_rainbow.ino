@@ -5,7 +5,7 @@
 
 // Number of WS2812B LEDs attached to the Arduino
 #define MAX_LED_COUNT 100
-#define LED_COUNT 10
+#define LED_COUNT 40
 
 // Setting up the NeoPixel library
 Adafruit_NeoPixel strip(MAX_LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);

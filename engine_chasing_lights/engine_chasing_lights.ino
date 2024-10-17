@@ -12,7 +12,7 @@ Adafruit_NeoPixel strip(MAX_LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   strip.begin();           // Initialize NeoPixel object
-  strip.setBrightness(10); // Set BRIGHTNESS to about 4% (max = 255)
+  strip.setBrightness(200); // Set BRIGHTNESS to about 4% (max = 255)
   strip.show();            // Initialize all pixels to 'off'
 
   // if I am going to change the number of LEDs being used
