@@ -2,6 +2,7 @@ from sanic import Sanic
 from sanic.response import html, json
 import asyncio
 from train import Train
+import serial
 
 app = Sanic("ButtonApp")
 
@@ -36,9 +37,9 @@ HTML_CONTENT = """
     
     <h2>Basic Controls</h2>
     <img src="/static/smoke.png" onclick="buttonAction('smoke')" style="cursor:pointer; width=100px; height=100px;" alt="Image 8"/>
-    <button onclick="buttonAction('lights')">Turn Lights On/Off</button>
-    <button onclick="buttonAction('horn')">Play Train Horn</button>
-    <button onclick="buttonAction('wheels')">Turn Wheels On/Off</button>
+    <img src="/static/lightbulb.jpg" onclick="buttonAction('lights')" style="cursor:pointer; width=100px; height=100px;" alt="Image 9"/>
+    <img src="/static/horn.png" onclick="buttonAction('horn')" style="cursor:pointer; width=100px; height=100px;" alt="Image 10"/>
+    <img src="/static/wheels.png" onclick="buttonAction('wheels')" style="cursor:pointer; width=100px; height=100px;" alt="Image 11"/>
     
     <h2>Music Controls</h2>
     <img src="/static/previous.png" onclick="buttonAction('previous')" style="cursor:pointer; width=100px;" alt="Image 1"/>
@@ -66,17 +67,43 @@ train_wheels   = Train("wheels")
 train_engine   = Train("engine")
 old_music_state = "stop"
 
+# define a Serial object to communicate with Arduino
+ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
+ser.reset_input_buffer()
+
+async def control_engine_LEDs():
+    if global_dict["leds"]["state"]:
+        # LEDs are on, so turn them off
+        ser.write(b"Turn LEDs off\n")
+    else:
+        ser.write(b"Turn LEDs on\n")
+
 async def control_smoke():
-    return 0
+    if global_dict["smoke"]["state"]:
+        # smoke is running, so turn it off
+        ser.write(b"Turn smoke off\n")
+    else:
+        ser.write(b"Turn smoke on\n")
 
 async def control_lights():
-    return 0
+    if global_dict["lights"]["state"]:
+        # if state = True/on, then turn them off
+        ser.write(b"Turn lights off\n")
+    else:
+        # state = False/off, so turn on lights
+        ser.write(b"Turn lights on\n")
 
 async def control_horn():
-    return 0
+    # play from the RPi
+    #train_horn.next_song()
+    print(f"Playing horn sound now")
 
 async def control_wheels():
-    return 0
+    if global_dict["wheels"]["state"]:
+        # wheels are spinning already, so turn them off
+        ser.write(b"Stop wheels\n")
+    else:
+        ser.write(b"Start wheels\n")
 
 async def pps_song(new_music_state):
     # play, pause, or stop song
@@ -139,16 +166,11 @@ async def set_volume(state):
 global_dict    = {"smoke":{"state":False,"function":control_smoke},
                   "lights":{"state":False,"function":control_lights},
                   "horn":{"state":False,"function":control_horn},
-                  "wheels":{"state":False,"function":control_wheels}
+                  "wheels":{"state":False,"function":control_wheels},
+                  "leds":{"state":False,"function":control_engine_LEDs}
                  }
 
 # Asynchronous actions triggered by buttons
-'''
-@app.route('/action/<action>')
-async def perform_action(request, action):
-    result = await toggle_states(action)
-    return json(result)
-'''
 
 music_control_list = ["play", "previous", "next", "pause", "stop", "increase", "decrease"]
 
