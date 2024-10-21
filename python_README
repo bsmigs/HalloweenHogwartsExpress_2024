@@ -16,3 +16,4 @@ packages to install
 pip3 install python-vlc
 pip3 install sanic # used for async HTML calls
 pip3 install sanic aiohttp
+pip3 install pyserial

@@ -113,13 +113,15 @@ class Train:
             self.release()
         
     def next_song(self):
-        self.stop_song()
+        if (self.media.get_state() != vlc.State.Stopped):
+            self.stop_song()
         self.change_counter("inc")
         print(f"counter={self.counter}")
         self.play_song()
         
     def previous_song(self):
-        self.stop_song()
+        if (self.media.get_state() != vlc.State.Stopped):
+            self.stop_song()
         self.change_counter("dec")
         print(f"counter={self.counter}")
         self.play_song()

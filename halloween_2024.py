@@ -68,8 +68,8 @@ train_engine   = Train("engine")
 old_music_state = "stop"
 
 # define a Serial object to communicate with Arduino
-ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
-ser.reset_input_buffer()
+#ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
+#ser.reset_input_buffer()
 
 async def control_engine_LEDs():
     if global_dict["leds"]["state"]:
@@ -193,6 +193,10 @@ async def toggle_states(action):
 
     await asyncio.sleep(1)
 
+    # run the associated function
+    #global_dict[action]["function"]
+
+    # flip the state
     global_dict[action]["state"] = not global_dict[action]["state"]
     msg = f"Turned {action} to {global_dict[action]['state']}"
     return {"message":msg}
