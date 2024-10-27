@@ -11,13 +11,7 @@ class Train:
         self.label = label
         self.song_playing = False
         if (label == "music"):
-            # make sure DigiAmp+ is unmuted
-            #self.unmuted = False
             self.path = mypath+"music"
-			#if (not self.unmuted):
-            #    os.system('dtoverlay=rpi-digiampplus,unmute_amp')
-            #    os.system('dtoverlay=iqaudio-digiampplus,unmute_amp')
-            #    self.unmuted = True 
         elif (label == "horn"):
             self.path = mypath+"horn_sounds_mp3s"
         elif (label == "wheels"):
@@ -41,7 +35,7 @@ class Train:
         # track the volume since every time
         # self.media is released the volume is set equal
         # to 0 again
-        self.curr_volume = 75
+        self.curr_volume = 70
 
         self.media = vlc.MediaPlayer()
 

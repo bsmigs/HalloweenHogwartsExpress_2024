@@ -67,11 +67,16 @@ train_wheels   = Train("wheels")
 train_engine   = Train("engine")
 old_music_state = "stop"
 
+train_horn.set_volume(95)
+train_engine.set_volume(95)
+
 # define a Serial object to communicate with Arduino
-#ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
-#ser.reset_input_buffer()
+ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+ser.reset_input_buffer()
 
 async def control_engine_LEDs():
+    global ser
+
     if global_dict["leds"]["state"]:
         # LEDs are on, so turn them off
         ser.write(b"Turn LEDs off\n")
@@ -79,6 +84,8 @@ async def control_engine_LEDs():
         ser.write(b"Turn LEDs on\n")
 
 async def control_smoke():
+    global ser
+
     if global_dict["smoke"]["state"]:
         # smoke is running, so turn it off
         ser.write(b"Turn smoke off\n")
@@ -86,6 +93,10 @@ async def control_smoke():
         ser.write(b"Turn smoke on\n")
 
 async def control_lights():
+    global ser
+
+    await asyncio.sleep(0.1)
+
     if global_dict["lights"]["state"]:
         # if state = True/on, then turn them off
         ser.write(b"Turn lights off\n")
@@ -95,10 +106,17 @@ async def control_lights():
 
 async def control_horn():
     # play from the RPi
-    #train_horn.next_song()
+    train_horn.next_song()
     print(f"Playing horn sound now")
 
+async def control_engine():
+    # play from the RPi
+    train_engine.next_song()
+    print(f"Playing engine sound now")
+
 async def control_wheels():
+    global ser
+
     if global_dict["wheels"]["state"]:
         # wheels are spinning already, so turn them off
         ser.write(b"Stop wheels\n")
@@ -111,18 +129,18 @@ async def pps_song(new_music_state):
 
     if new_music_state == "play":
         if old_music_state == "stop":
-            #train_music.play_song()
+            train_music.play_song()
             print(f"Hit play from stop")
         elif old_music_state == "pause":
-            #train_music.resume_song()
+            train_music.resume_song()
             print(f"Hit play from pause")
     elif new_music_state == "pause":
         if old_music_state == "play":
-            #train_music.pause_song()
+            train_music.pause_song()
             print(f"Hit pause from play")
     elif new_music_state == "stop":
         if old_music_state != "stop":
-            #train_music.stop_song()
+            train_music.stop_song()
             print(f"Hit stop from play or pause")
     old_music_state = new_music_state
 
@@ -134,10 +152,10 @@ async def change_song(state):
     global old_music_state
 
     if state == "next":
-        #train_music.next_song()
+        train_music.next_song()
         print(f"Went to next song")
     elif state == "previous":
-        #train_music.previous_song()
+        train_music.previous_song()
         print(f"Went to previous song")
 
     msg = f"Moved to {state} song"
@@ -148,14 +166,14 @@ async def set_volume(state):
     global old_music_state
 
     if old_music_state == "play":
-        #vol = train_music.get_volume()
+        vol = train_music.get_volume()
         if state == "increase":
-            #vol += 10
-            print(f"Increased volume")
+            vol += 10
+            print(f"Increased volume to {vol}")
         elif state == "decrease":
-            #vol -= 10
-            print(f"Decreased volume")
-        #train_music.set_volume(vol)
+            vol -= 10
+            print(f"Decreased volume to {vol}")
+        train_music.set_volume(vol)
 
         msg = f"{state}d volume"
     else:
@@ -164,6 +182,7 @@ async def set_volume(state):
 
 
 global_dict    = {"smoke":{"state":False,"function":control_smoke},
+                  "engine":{"state":False,"function":control_engine},
                   "lights":{"state":False,"function":control_lights},
                   "horn":{"state":False,"function":control_horn},
                   "wheels":{"state":False,"function":control_wheels},
@@ -191,10 +210,10 @@ async def perform_action(request, action):
 async def toggle_states(action):
     global global_dict
 
-    await asyncio.sleep(1)
+    await asyncio.sleep(0.1)
 
     # run the associated function
-    #global_dict[action]["function"]
+    await global_dict[action]["function"]()
 
     # flip the state
     global_dict[action]["state"] = not global_dict[action]["state"]

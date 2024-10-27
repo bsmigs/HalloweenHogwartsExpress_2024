@@ -17,3 +17,7 @@ pip3 install python-vlc
 pip3 install sanic # used for async HTML calls
 pip3 install sanic aiohttp
 pip3 install pyserial
+
+5) Had to make sure the Digiamp+ was enabled via sudo raspi-config, choosing
+system options, choosing audio, and then selecting the Digiamp+ option. Also
+had to type "alsamixer" at the terminal and jack the volume up
