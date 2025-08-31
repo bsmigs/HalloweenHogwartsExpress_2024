@@ -21,3 +21,13 @@ pip3 install pyserial
 5) Had to make sure the Digiamp+ was enabled via sudo raspi-config, choosing
 system options, choosing audio, and then selecting the Digiamp+ option. Also
 had to type "alsamixer" at the terminal and jack the volume up
+
+Info for serving the webpage:
+
+profile name for nmtui (and needed to have it be persistent boot) is halloweenHogwarts
+
+sudo nmcli device wifi hotspot ssid HalloweenHogwarts password potter2024
+
+choosing 192.168.7.1 for IP
+
+need to go to 192.168.7.1:8000 to serve webpage
